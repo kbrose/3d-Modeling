@@ -16,12 +16,12 @@ extruder_width = 0.35 # in mm
 ext_fil_ratio = filament_width / extruder_width
 layer_height = 0.35 # in mm
 offset = [30., 30.] # in mm
-scale = .75
-resolution_rescale = 1
+scale = .5
+resolution_rescale = 1.
 
 # SOFTWARE SETTINGS
-NU = 0.1
-GAMMA = 0.1
+NU = 0.001
+GAMMA = 0.05
 KERNEL = 'rbf'
 
 if __name__ == '__main__':
@@ -39,13 +39,24 @@ if __name__ == '__main__':
     else:
         print 'Error, unrecognized file format, please use .stl or .ptc'
         quit()
-    x_vals = [x[0] for x in pts]
-    y_vals = [x[1] for x in pts]
-    z_vals = [x[2] for x in pts]
-    x_axis = [x * float(extruder_width / resolution_rescale) for x in range(int(min(x_vals)/extruder_width*resolution_rescale), int(max(x_vals)/extruder_width*resolution_rescale)+1)]
-    y_axis = [y * float(extruder_width / resolution_rescale) for y in range(int(min(y_vals)/extruder_width*resolution_rescale), int(max(y_vals)/extruder_width*resolution_rescale)+1)]
+    x_vals = [scale * x[0] for x in pts]
+    min_x = min(x_vals)
+    x_vals = [x - min_x for x in x_vals]
+
+    y_vals = [scale * x[1] for x in pts]
+    min_y = min(y_vals)
+    y_vals = [y - min_y for y in y_vals]
+
+    z_vals = [scale * x[2] * 2 for x in pts]
+    min_z = min(z_vals)
+    z_vals = [z - min_z for z in z_vals]
+
+    pts = zip(x_vals, y_vals, z_vals)
+
+    x_axis = np.linspace(0, max(x_vals), max(x_vals) / (extruder_width * resolution_rescale)+1).tolist()
+    y_axis = np.linspace(0, max(y_vals), max(y_vals) / (extruder_width * resolution_rescale)+1).tolist()
     xy_grid = [[x,y] for x in x_axis for y in y_axis]
-    z_axis = [z * float(layer_height) for z in range(int(min(z_vals)/layer_height), int(max(z_vals)/layer_height))]
+    z_axis = np.linspace(0, max(z_vals), max(z_vals) / (layer_height)+1).tolist()
 
     # step 2: construct an SVM around the point cloud
     clf = svm.OneClassSVM(nu=NU, kernel=KERNEL, gamma=GAMMA)
@@ -58,14 +69,16 @@ if __name__ == '__main__':
     e = 1.0
     for z in z_axis:
         with open(out_name, 'a') as out:
-            out.write('G1 Z%.5f\n' % z)
+            out.write('G1 Z%.4f\n' % z)
         M = clf.decision_function([x + [z] for x in xy_grid])
         M = M.reshape([len(x_axis), len(y_axis)])
         M = [[M[i][j] > 0 for i in range(len(M))] for j in range(len(M[0]))]
         outline = perim.grid(M)
+        # outline.showAll()
+        # time.sleep(.2)
         if len(outline.perimeters) > 0:
             e = comp.write_perims(out_name, reduce(add, outline.perimeters),
-                                  e, ext_fil_ratio, offset, scale)
+                                  e, ext_fil_ratio, offset)
 
 
 

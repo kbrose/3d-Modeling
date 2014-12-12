@@ -72,7 +72,7 @@ class grid:
         M = self.M
         self.queue = []
         start = 0
-        while start < self.n and sum(M[start]) == 0:
+        while start < self.m and sum(M[start]) == 0:
             start = start + 1
         if start == self.n:
             return
@@ -97,13 +97,13 @@ class grid:
                             M[q.midrow-1][q.col+1] = 2
                             M[q.midrow+1][q.col+1] = 2
                     if q.l == []:
-                        if M[q.midrow][q.col+1] and M[q.midrow+1][q.col+1]:
+                        if q.midrow+1 < self.m and M[q.midrow][q.col+1] and M[q.midrow+1][q.col+1]:
                             q.l = [q.midrow]
                             q.u = [q.midrow+1]
                             M[q.midrow][q.col+1] = 2
                             M[q.midrow+1][q.col+1] = 2
                     if q.l == []:
-                        if M[q.midrow][q.col+1] and M[q.midrow-1][q.col+1]:
+                        if q.midrow-1 > 0 and M[q.midrow][q.col+1] and M[q.midrow-1][q.col+1]:
                             M[q.midrow-1][q.col+1] = 2
                             M[q.midrow][q.col+1] = 2
                             q.l = [q.midrow-1]

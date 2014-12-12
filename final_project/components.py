@@ -14,7 +14,7 @@ def make_gcode(component, e, out_name, offset, ext_fil_ratio):
         out.write("G1 E%.4f F1800.00\n" % e)
         for coords in component[1:]:
             e += distance(prev, coords) / float(ext_fil_ratio)
-            out.write("G1 X%d Y%d E%.4f\n" % (coords[0] + offset[0], coords[1] + offset[1], e))
+            out.write("G1 X%.4f Y%.4f E%.4f\n" % (coords[0] + offset[0], coords[1] + offset[1], e))
             prev = coords
         out.write("G1 F1800.000 E0.12842\n")
     return e
@@ -53,13 +53,13 @@ def write_postlude(out_name):
         """
         out.write(end)
 
-def write_perims(out_name, perims, e, ext_fil_ratio, offset=[50.,50.], scale=1.):
+def write_perims(out_name, perims, e, ext_fil_ratio, offset=[50.,50.]):
     hist = -1
     component = []
     for i in perims:
         i = map(tuple, i)
-        i[0] = (scale*float(i[0][0]), scale*float(i[0][1])
-        i[1] = (scale*float(i[1][0]), scale*float(i[1][1])
+        i[0] = (i[0][0], i[0][1])
+        i[1] = (i[1][0], i[1][1])
         if hist == -1:
           hist = i[0]
         component.append(i[0])
