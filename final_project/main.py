@@ -13,18 +13,18 @@ import perimeter as perim
 # PRINTER SETTINGS
 filament_width = 1.75 # in mm
 extruder_width = 0.35 # in mm
-ext_fil_ratio = filament_width / extruder_width
+ext_fil_ratio = filament_width / extruder_width * 1.35
 layer_height = 0.35 # in mm
 offset = [30., 30.] # in mm
-scale = .5
+scale = .38
 resolution_rescale = 1.
 
 # SOFTWARE SETTINGS
-NU = 0.001
-GAMMA = 0.05
+NU = 0.0005
+GAMMA = 0.2
 KERNEL = 'rbf'
 
-if __name__ == '__main__':
+def main():
     # step 1: get the point cloud, find its bounding box all dimensions
     f_name = argv[1]
     if f_name[-4:].lower() == '.stl':
@@ -79,6 +79,10 @@ if __name__ == '__main__':
         if len(outline.perimeters) > 0:
             e = comp.write_perims(out_name, reduce(add, outline.perimeters),
                                   e, ext_fil_ratio, offset)
+
+
+if __name__ == '__main__':
+    main()
 
 
 
