@@ -16,12 +16,12 @@ extruder_width = 0.35 # in mm
 ext_fil_ratio = filament_width / extruder_width * 1.35
 layer_height = 0.35 # in mm
 offset = [30., 30.] # in mm
-scale = .38
+scale = .3
 resolution_rescale = 1.
 
 # SOFTWARE SETTINGS
 NU = 0.0005
-GAMMA = 0.2
+GAMMA = 0.06
 KERNEL = 'rbf'
 
 def main():

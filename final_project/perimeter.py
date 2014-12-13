@@ -215,6 +215,8 @@ class grid:
     # adds all "in" nodes that weren't found in column k
     # by iterating through nodes in the queue from column k-1
     def parentlessQueue(self,k):
+        if k >= self.n:
+            return
         col = [self.M[i][k] for i in range(self.m)]
         Q = []
         for i in range(self.m):
